@@ -55,6 +55,13 @@ def crear_individuo():
 # genetico.
 def crear_poblacion():
     return [crear_individuo() for _ in range(POBLACION)]
+
+""" para calcular el valor de Rastrigin de cada individuo. Mientras menor
+sea este valor, mejor es la solucion """
+def evaluar_objetivo(poblacion):
+    for individuo in poblacion:
+        individuo.objetivo = rastrigin(individuo.cromosoma)
+        
 #aqui termine (Aarón)
 
 # valores pequeños de Rastrigin produzcan fitness mas alto.
@@ -102,11 +109,67 @@ def asignar_fitness(poblacion, transformacion):
 
     else:
         raise ValueError(f"Transformacion desconocida: {transformacion}")
-# Aquí termine (César)
+# Aquí termine (Cesar)
 
-""" para calcular el valor de Rastrigin de cada individuo. Mientras menor
-sea este valor, mejor es la solucion """
-def evaluar_objetivo(poblacion):
-    for individuo in poblacion:
-        individuo.objetivo = rastrigin(individuo.cromosoma)
-        
+def seleccion_torneo(poblacion, k=3):
+    participantes = np.random.choice(poblacion, size=k, replace=False)
+    return max(participantes, key=lambda ind: ind.fitness)
+
+def cruzamiento_un_punto(padre1, padre2):
+    if np.random.rand() > PROB_CRUZAMIENTO:
+        return padre1.cromosoma.copy(), padre2.cromosoma.copy()
+
+    punto = np.random.randint(1, LONGITUD_CROMOSOMA)
+
+    hijo1 = np.concatenate([
+        padre1.cromosoma[:punto],
+        padre2.cromosoma[punto:]
+    ])
+
+    hijo2 = np.concatenate([
+        padre2.cromosoma[:punto],
+        padre1.cromosoma[punto:]
+    ])
+
+    return hijo1, hijo2
+
+def mutacion_uniforme(cromosoma):
+    cromosoma_mutado = cromosoma.copy()
+
+    for i in range(LONGITUD_CROMOSOMA):
+        if np.random.rand() < PROB_MUTACION:
+            cromosoma_mutado[i] = np.random.uniform(
+                LIMITE_INFERIOR,
+                LIMITE_SUPERIOR
+            )
+
+    return cromosoma_mutado
+
+def generar_nueva_poblacion(poblacion):
+    nueva_poblacion = []
+
+    while len(nueva_poblacion) < POBLACION:
+
+        padre1 = seleccion_torneo(poblacion)
+        padre2 = seleccion_torneo(poblacion)
+
+        cromosoma_hijo1, cromosoma_hijo2 = cruzamiento_un_punto(
+            padre1,
+            padre2
+        )
+
+        cromosoma_hijo1 = mutacion_uniforme(cromosoma_hijo1)
+        cromosoma_hijo2 = mutacion_uniforme(cromosoma_hijo2)
+
+        nueva_poblacion.append(
+            Individuo(cromosoma=cromosoma_hijo1)
+        )
+
+        if len(nueva_poblacion) < POBLACION:
+            nueva_poblacion.append(
+                Individuo(cromosoma=cromosoma_hijo2)
+            )
+
+    return nueva_poblacion
+# Aquí termine (Lalo)
+
