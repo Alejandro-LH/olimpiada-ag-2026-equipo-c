@@ -55,7 +55,54 @@ def crear_individuo():
 # genetico.
 def crear_poblacion():
     return [crear_individuo() for _ in range(POBLACION)]
+#aqui termine (Aarón)
 
+# valores pequeños de Rastrigin produzcan fitness mas alto.
+def fitness_inversion(valor_objetivo):
+    return 1.0 / (1.0 + valor_objetivo)
+
+#convierte minimizacion a maximizacion usando como referencia el peor valor de la poblacion.
+def fitness_negacion(valor_objetivo, c_max):
+    return max(0.0, c_max - valor_objetivo)
+
+# asigna fitness segun el lugar del individuo en la poblacion, sin depender directamente del valor numerico de Rastrigin.
+def fitness_ranking(poblacion, sp=1.5):
+    N = len(poblacion)
+    fitness_dict = {}
+
+    if N == 1:
+        fitness_dict[0] = 1.0
+        return fitness_dict
+
+    for rank in range(1, N + 1):
+        fitness = 2 - sp + 2 * (sp - 1) * (rank - 1) / (N - 1)
+        fitness_dict[rank - 1] = fitness
+
+    return fitness_dict
+
+# el algoritmo pueda probar las 3 transformaciones sin cambiar el resto del codigo.
+def asignar_fitness(poblacion, transformacion):
+    evaluar_objetivo(poblacion)
+
+    if transformacion == "Inversion":
+        for individuo in poblacion:
+            individuo.fitness = fitness_inversion(individuo.objetivo)
+
+    elif transformacion == "Negacion":
+        peor_objetivo = max(individuo.objetivo for individuo in poblacion)
+        c_max = peor_objetivo * 1.1
+        for individuo in poblacion:
+            individuo.fitness = fitness_negacion(individuo.objetivo, c_max)
+
+    elif transformacion == "Ranking":
+        poblacion_ordenada = sorted(poblacion, key=lambda ind: ind.objetivo, reverse=True)
+        ranking = fitness_ranking(poblacion_ordenada)
+        for indice, individuo in enumerate(poblacion_ordenada):
+            individuo.fitness = ranking[indice]
+
+    else:
+        raise ValueError(f"Transformacion desconocida: {transformacion}")
+# Aquí termine (César)
 
 """ para calcular el valor de Rastrigin de cada individuo. Mientras menor
 sea este valor, mejor es la solucion """
@@ -63,15 +110,3 @@ def evaluar_objetivo(poblacion):
     for individuo in poblacion:
         individuo.objetivo = rastrigin(individuo.cromosoma)
         
-if __name__ == "__main__":
-    prueba = np.zeros(10)
-    print(rastrigin(prueba))
-    #Aarón
-    np.random.seed(42)
-    poblacion = crear_poblacion()
-    evaluar_objetivo(poblacion)
-
-    print(f'Población -> {len(poblacion)}')
-    print(f'Cromosoma -> {len(poblacion[0].cromosoma)}')
-    print(f'Poblacion -> {poblacion[0].objetivo}')
-    #aqui termine (Aarón)
