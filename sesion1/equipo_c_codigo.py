@@ -30,6 +30,9 @@ LIMITE_INFERIOR = -5.12
 LIMITE_SUPERIOR = 5.12
 SEMILLA = 42
 
+ARCHIVO_CSV = "equipo_C_resultados.csv"
+ARCHIVO_GRAFICA = "equipo_C_grafica.png"
+
 @dataclass
 class Individuo:
     cromosoma: np.ndarray
@@ -234,9 +237,78 @@ def ejecutar_experimento(transformacion, elitismo):
 
 #Aqui termina(kenya)
 
+# Aqui empieza Rodrigo
+
+def guardar_resultados_csv(resultados):
+    columnas = [
+        "Transformacion",
+        "Elitismo",
+        "Mejor_Fitness",
+        "Generaciones",
+        "Tiempo_seg",
+        "Diversidad_Final",
+    ]
+
+    with open(ARCHIVO_CSV, "w", newline="", encoding="utf-8") as archivo:
+        writer = csv.DictWriter(archivo, fieldnames=columnas)
+        writer.writeheader()
+
+        for fila in resultados:
+            writer.writerow(
+                {
+                    "Transformacion": fila["Transformacion"],
+                    "Elitismo": fila["Elitismo"],
+                    "Mejor_Fitness": f"{fila['Mejor_Fitness']:.6f}",
+                    "Generaciones": fila["Generaciones"],
+                    "Tiempo_seg": f"{fila['Tiempo_seg']:.4f}",
+                    "Diversidad_Final": f"{fila['Diversidad_Final']:.6f}",
+                }
+            )
+def guardar_grafica(historiales):
+    generaciones = list(range(GENERACIONES + 1))
+
+    plt.figure(figsize=(12, 8))
+
+    for etiqueta, historial in historiales.items():
+        plt.plot(generaciones, historial, label=etiqueta, linewidth=2)
+
+    plt.xlabel("Generacion", fontsize=12)
+    plt.ylabel("Mejor Fitness", fontsize=12)
+    plt.title("Convergencia: Transformaciones de Fitness x Elitismo", fontsize=14)
+    plt.legend(loc="best", fontsize=9)
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(ARCHIVO_GRAFICA, dpi=300, bbox_inches="tight")
+    plt.close()
+
+
+
+def main():
+    transformaciones = ["Inversion", "Negacion", "Ranking"]
+    niveles_elitismo = [0, 2, 5]
+
+    resultados = []
+    historiales = {}
+
+    for transformacion in transformaciones:
+        for elitismo in niveles_elitismo:
+            resultado, historial = ejecutar_experimento(transformacion, elitismo)
+            resultados.append(resultado)
+            historiales[f"{transformacion} k={elitismo}"] = historial
+
+            print(
+                f"{transformacion:9s} | k={elitismo} | "
+                f"Mejor fitness={resultado['Mejor_Fitness']:.6f} | "
+                f"Tiempo={resultado['Tiempo_seg']:.4f}s | "
+                f"Diversidad={resultado['Diversidad_Final']:.6f}"
+            )
+
+    guardar_resultados_csv(resultados)
+    guardar_grafica(historiales)
+
+    print(f"\nCSV generado: {ARCHIVO_CSV}")
+    print(f"Grafica generada: {ARCHIVO_GRAFICA}")
+
 
 if __name__ == "__main__":
-    resultado, historial = ejecutar_experimento("Inversion", 2)
-
-    print(resultado)
-    print(len(historial))
+    main()
