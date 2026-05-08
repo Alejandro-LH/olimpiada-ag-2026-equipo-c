@@ -42,8 +42,36 @@ def rastrigin(x):
 
     return A * n + np.sum(x**2 - A * np.cos(2 * np.pi * x))
 
+# crear una posible solucion con 10 numeros reales dentro del rango permitido
+def crear_individuo():
+    cromosoma = np.random.uniform(
+        LIMITE_INFERIOR,
+        LIMITE_SUPERIOR,
+        size=LONGITUD_CROMOSOMA,
+    )
+    return Individuo(cromosoma=cromosoma)
+
+# crear los 50 individuos que forman una generacion del algoritmo
+# genetico.
+def crear_poblacion():
+    return [crear_individuo() for _ in range(POBLACION)]
+
+
+""" para calcular el valor de Rastrigin de cada individuo. Mientras menor
+sea este valor, mejor es la solucion """
+def evaluar_objetivo(poblacion):
+    for individuo in poblacion:
+        individuo.objetivo = rastrigin(individuo.cromosoma)
+        
 if __name__ == "__main__":
     prueba = np.zeros(10)
     print(rastrigin(prueba))
+    #Aarón
+    np.random.seed(42)
+    poblacion = crear_poblacion()
+    evaluar_objetivo(poblacion)
 
-
+    print(f'Población -> {len(poblacion)}')
+    print(f'Cromosoma -> {len(poblacion[0].cromosoma)}')
+    print(f'Poblacion -> {poblacion[0].objetivo}')
+    #aqui termine (Aarón)
