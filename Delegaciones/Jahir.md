@@ -9,11 +9,34 @@ Tu parte permite que los demas integrantes puedan agregar sus funciones encima.
 
 ```text
 GitHub: crear o abrir el repositorio.
-Git Bash: crear carpetas, crear archivos y hacer commits.
+Terminal de Mac: clonar repo, crear carpetas, crear archivos, probar y hacer commits.
 VS Code: escribir codigo y editar archivos.
 ```
 
-## Paso 0: Crea y abre el repositorio
+## Paso 0: Verifica herramientas en Mac
+
+Haz esto en `Terminal`.
+
+```bash
+git --version
+python3 --version
+```
+
+Si `git --version` no funciona, ejecuta:
+
+```bash
+xcode-select --install
+```
+
+Si `python3 --version` no funciona, instala Python desde:
+
+```text
+https://www.python.org/downloads/
+```
+
+Esto sirve para confirmar que tu Mac puede usar Git y ejecutar Python.
+
+## Paso 1: Crea el repositorio
 
 Haz esto en `GitHub`, desde el navegador.
 
@@ -37,10 +60,12 @@ Debe parecerse a esto:
 https://github.com/TU_USUARIO/olimpiada-ag-2026-equipo-C.git
 ```
 
-Ahora haz esto en `Git Bash`.
+## Paso 2: Clona el repositorio en tu Mac
+
+Haz esto en `Terminal`.
 
 ```bash
-cd Documents
+cd ~/Documents
 git clone https://github.com/TU_USUARIO/olimpiada-ag-2026-equipo-C.git
 cd olimpiada-ag-2026-equipo-C
 code .
@@ -49,9 +74,11 @@ code .
 Si `code .` no funciona, abre `VS Code`, entra a `File > Open Folder` y selecciona
 la carpeta `olimpiada-ag-2026-equipo-C`.
 
+Esto sirve para tener el repositorio en tu computadora y abrirlo para editar.
+
 ## Archivos que debes crear
 
-Haz esto en `Git Bash`, dentro de la carpeta del repositorio.
+Haz esto en `Terminal`, dentro de la carpeta del repositorio.
 
 Desde la raiz del repositorio, crea esta estructura:
 
@@ -68,8 +95,7 @@ docs/
 Usa estos comandos:
 
 ```bash
-mkdir sesion1
-mkdir docs
+mkdir -p sesion1 docs
 touch .gitignore
 touch sesion1/equipo_C_codigo.py
 touch sesion1/requirements.txt
@@ -78,7 +104,7 @@ touch docs/decisiones.md
 
 Los nombres ya estan configurados para el Equipo C.
 
-## Paso 1: Agrega las dependencias
+## Paso 3: Agrega las dependencias
 
 Haz esto en `VS Code`.
 
@@ -92,7 +118,7 @@ pandas
 
 Esto sirve para que cualquier integrante pueda instalar las librerias necesarias.
 
-## Paso 2: Agrega los imports
+## Paso 4: Agrega los imports
 
 Haz esto en `VS Code`.
 
@@ -121,9 +147,9 @@ import matplotlib.pyplot as plt
 
 Esto sirve para usar archivos CSV, tiempo de ejecucion, individuos, graficas y
 calculos numericos. La parte de cache y `Agg` sirve para que Matplotlib genere
-la imagen correctamente en Windows aunque no se abra una ventana de grafica.
+la imagen sin depender de una ventana grafica.
 
-## Paso 3: Agrega los parametros fijos
+## Paso 5: Agrega los parametros fijos
 
 Haz esto en `VS Code`, debajo de los imports.
 
@@ -146,7 +172,7 @@ SEMILLA = 42
 
 Esto sirve para respetar los parametros obligatorios del reto.
 
-## Paso 4: Crea la estructura del individuo
+## Paso 6: Crea la estructura del individuo
 
 Haz esto en `VS Code`, debajo de los parametros.
 
@@ -166,7 +192,7 @@ Esto sirve para guardar cada solucion del algoritmo genetico.
 - `objetivo`: valor de Rastrigin.
 - `fitness`: valor usado para seleccionar individuos.
 
-## Paso 5: Programa la funcion Rastrigin
+## Paso 7: Programa la funcion Rastrigin
 
 Haz esto en `VS Code`, debajo de la clase `Individuo`.
 
@@ -182,9 +208,9 @@ def rastrigin(x):
 Esto sirve para evaluar que tan buena es una solucion. El algoritmo busca que
 este valor sea lo mas cercano posible a `0`.
 
-## Paso 6: Prueba tu parte
+## Paso 8: Prueba tu parte
 
-Haz la prueba en `VS Code` y ejecutala desde `Git Bash`.
+Haz la prueba en `VS Code` y ejecutala desde `Terminal`.
 
 Al final del archivo, temporalmente puedes probar:
 
@@ -200,11 +226,17 @@ Debe imprimir:
 0.0
 ```
 
+Ejecuta desde `Terminal`:
+
+```bash
+python3 sesion1/equipo_C_codigo.py
+```
+
 Despues de probar, avisa al equipo que ya pueden continuar los demas.
 
-## Paso 7: Haz commit
+## Paso 9: Haz commit
 
-Haz esto en `Git Bash`, desde la raiz del repositorio.
+Haz esto en `Terminal`, desde la raiz del repositorio.
 
 ```bash
 git add .
