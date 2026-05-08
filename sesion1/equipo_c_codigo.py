@@ -173,3 +173,70 @@ def generar_nueva_poblacion(poblacion):
     return nueva_poblacion
 # Aquí termine (Lalo)
 
+#Aquí empieza (kenya)
+def aplicar_elitismo(poblacion_actual, nueva_poblacion, k):
+    if k == 0:
+        return nueva_poblacion
+
+    poblacion_actual_ordenada = sorted(
+        poblacion_actual,
+        key=lambda ind: ind.fitness,
+        reverse=True,
+    )
+
+    elites = [
+        Individuo(
+            cromosoma=ind.cromosoma.copy(),
+            objetivo=ind.objetivo,
+            fitness=ind.fitness,
+        )
+        for ind in poblacion_actual_ordenada[:k]
+    ]
+
+    nueva_poblacion_ordenada = sorted(
+        nueva_poblacion,
+        key=lambda ind: ind.fitness,
+        reverse=True,
+    )
+
+    return elites + nueva_poblacion_ordenada[: len(nueva_poblacion) - k]
+
+def ejecutar_experimento(transformacion, elitismo):
+    np.random.seed(SEMILLA)
+    inicio = time.perf_counter()
+
+    poblacion = crear_poblacion()
+    asignar_fitness(poblacion, transformacion)
+
+    historial_mejor_fitness = [max(ind.fitness for ind in poblacion)]
+
+    for _ in range(GENERACIONES):
+        nueva_poblacion = generar_nueva_poblacion(poblacion)
+        asignar_fitness(nueva_poblacion, transformacion)
+        poblacion = aplicar_elitismo(poblacion, nueva_poblacion, elitismo)
+        asignar_fitness(poblacion, transformacion)
+
+        mejor_fitness = max(ind.fitness for ind in poblacion)
+        historial_mejor_fitness.append(mejor_fitness)
+
+    tiempo_seg = time.perf_counter() - inicio
+
+    resultado = {
+        "Transformacion": transformacion,
+        "Elitismo": elitismo,
+        "Mejor_Fitness": max(ind.fitness for ind in poblacion),
+        "Generaciones": GENERACIONES,
+        "Tiempo_seg": tiempo_seg,
+        "Diversidad_Final": float(np.std([ind.fitness for ind in poblacion])),
+    }
+
+    return resultado, historial_mejor_fitness
+
+#Aqui termina(kenya)
+
+
+if __name__ == "__main__":
+    resultado, historial = ejecutar_experimento("Inversion", 2)
+
+    print(resultado)
+    print(len(historial))
